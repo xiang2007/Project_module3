@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: week3-backend
+    environment:
+      FRONTEND_ORIGIN: http://localhost:8000
+    ports:
+      - "8001:8000"
+    networks:
+      - app_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: week3-frontend
+    environment:
+      BACKEND_URL: http://localhost:8001/chat
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge

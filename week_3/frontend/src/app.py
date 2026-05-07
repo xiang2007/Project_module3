@@ -1,19 +1,23 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from dotenv import load_dotenv
 
 
 app = FastAPI()
 
-@app.get("/")
-async def read_items():
-    html_content = """
-    <html>
-        <head>
-            <title>Hello World!</title>
-        </head>
-        <body>
-            <h1>Hello World!</h1>
-        </body>
-    </html>
-    """
-    return HTMLResponse(content=html_content, status_code=200)
+load_dotenv()
+backend_url = os.getenv("BACKEND_URL", "")
+
+current_file_dir = os.path.dirname(os.path.realpath(__file__))
+template_path = os.path.join(current_file_dir, "templates")
+templates = Jinja2Templates(directory=template_path)
+
+@app.get("/", response_class=HTMLResponse)
+async def read_items(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "chat_page.html",
+        {"backend_url": backend_url},
+    )
